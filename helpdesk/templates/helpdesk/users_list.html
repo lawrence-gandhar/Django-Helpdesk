@@ -6,9 +6,29 @@
 {% load pagination %}
 
 {% endblock %}
-{% block h1_title %}Tickets
+<script>
+    $(document).ready(function() {
+      
+        $("#select_inverse").click(function() {
+            $(this).attr('param', 1 - $(this).attr('param'));
+    
+            if($(this).attr('param') == 1) $(this).css("color","#f5fb02");
+            else $(this).css("color","#FFFFFF");
+    
+    
+            $(".ticket_multi_select").each(function() {
+                $(this).attr('checked', !$(this).attr('checked'));
+            });
+            return false;
+        });
+    });
+    </script>
+{% block h1_title %}Users
+
+{% if user.is_superuser %}
 <a href="{% url 'helpdesk:submit' %}" class="pull-right" style="color:#FFFFFF; margin-right:10px;">
-    <i class="fa fa-plus-circle fa-fw"></i> <span class="nav-text">{% trans "Add New Ticket" %}</span></a>
+    <i class="fa fa-plus-circle fa-fw"></i> <span class="nav-text">{% trans "Add New User" %}</span></a>
+{% endif %}
 {% endblock %}
 
 {% block helpdesk_body %}
@@ -16,7 +36,7 @@
     <div class="col-lg-12">
         <div class="panel panel-custom panel-custom-orange">
             <div class="panel-heading panel-heading-orange">
-                <strong>{% trans "Users" %}</strong>                    
+                <strong>{% trans "Results" %}</strong>                    
             </div>
 
             <div class="panel-body panel-custom-body">
