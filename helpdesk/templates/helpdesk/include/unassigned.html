@@ -1,0 +1,61 @@
+{% load i18n humanize %}
+
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="panel panel-custom panel-custom-orange">
+                        <div class="panel-heading panel-heading-orange">
+                            <strong>
+                            {% trans "Unassigned Tickets" %} {% trans "(pick up a ticket if you start to work on it)" %}
+                            </strong>
+                        </div>
+                        <!-- /.panel-heading -->
+                        <div class="panel-body panel-custom-body panel-body-scrollbar-1em" style="height:200px; overflow:auto;">
+                            <div class="table-responsive">
+                                <table class="table table-bordered table-hover" style="margin:0px;font-size:85%">
+                                    <thead class="table-heading-orange">
+                                        <tr>
+                                            <th width="150px" style="text-align:center">Ticket ID</th>
+                                            <th width="100px" style="text-align:center">{% trans "Priority" %}</th>
+                                            <th style="text-align:center">{% trans "Title" %}</th>
+                                            <th width="150px" style="text-align:center">{% trans "Queue" %}</th>
+                                            <th width="80px" style="text-align:center">{% trans "Status" %}</th>
+                                            <th width="150px" style="text-align:center">{% trans "Created" %}</th>
+                                            <th width="139px" style="text-align:center">{% trans "Action" %}</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for ticket in unassigned_tickets %}
+                                        <tr>
+                                            <td><a href='{{ ticket.get_absolute_url }}'>{{ ticket.ticket }}</a></td>
+                                            <td>
+                                                <span class="color-{{ ticket.get_priority_css_class }}">
+                                                    {% if ticket.priority == 1 %} Critical
+                                                    {% elif ticket.priority == 2 %} High
+                                                    {% elif ticket.priority == 3 %} Normal
+                                                    {% elif ticket.priority == 4 %} Low
+                                                    {% elif ticket.priority == 5 %} Very Low
+                                                    {% endif %}
+                                                </span>
+                                            </td>
+                                            <td><a href='{{ ticket.get_absolute_url }}'>{{ ticket.title }}</a></td>
+                                            <td>{{ ticket.queue }}</td>
+                                            <td>{{ ticket.get_status }}</td>
+                                            <td><span title='{{ ticket.created|date:"r" }}'>{{ ticket.created|naturaltime }}</span></td>
+                                            <td>
+                                                <a href='{{ ticket.get_absolute_url }}?take'><button class='btn btn-primary btn-xs'><i class="fa fa-hand-paper-o"></i>&nbsp;{% trans "Take" %}</button></a> |
+                                                <a href="{% url 'helpdesk:delete' ticket.id %}"><button class='btn btn-danger btn-xs'><i class="fa fa-trash"></i>&nbsp;{% trans "Delete" %}</button></a>
+                                            </td>
+                                        </tr>
+                                        {% empty %}
+                                        <tr><td colspan='7'>{% trans "There are no unassigned tickets." %}</td></tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                            <!-- /.table-responsive -->
+                        </div>
+                        <!-- /.panel-body -->
+                    </div>
+                    <!-- /.panel -->
+                </div>
+            </div>

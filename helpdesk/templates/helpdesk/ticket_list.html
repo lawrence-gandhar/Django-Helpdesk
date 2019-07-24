@@ -1,0 +1,171 @@
+{% extends "helpdesk/base.html" %}
+{% load i18n humanize %}
+{% load static from staticfiles %}
+{% block helpdesk_title %}{% trans "Tickets" %}{% endblock %}
+{% block helpdesk_head %}
+{% load pagination %}
+
+<script src='{% static "helpdesk/filter.js" %}'></script>
+<script>
+$(document).ready(function() {
+
+    $('#ticketTable').DataTable({
+            "oLanguage": {
+                "sEmptyTable": "{% trans 'No Tickets Match Your Selection' %}"
+            },
+            "order": [],
+            responsive: true
+    });
+
+    $("#select_inverse").click(function() {
+        $(this).attr('param', 1 - $(this).attr('param'));
+
+        if($(this).attr('param') == 1) $(this).css("color","#f5fb02");
+        else $(this).css("color","#FFFFFF");
+
+
+        $(".ticket_multi_select").each(function() {
+            $(this).attr('checked', !$(this).attr('checked'));
+        });
+        return false;
+    });
+});
+</script>
+{% endblock %}
+{% block h1_title %}Tickets
+<a href="{% url 'helpdesk:submit' %}" class="pull-right" style="color:#FFFFFF; margin-right:10px;">
+    <i class="fa fa-plus-circle fa-fw"></i> <span class="nav-text">{% trans "Add New Ticket" %}</span></a>
+{% endblock %}
+{% block helpdesk_body %}
+
+{% load in_list %}
+    <div class="row">
+        <div class="col-lg-9">
+            <div class="panel panel-custom panel-custom-orange">
+                <div class="panel-heading panel-heading-orange">
+					<strong>{% trans "Results" %}</strong>                    
+					<form action="{% url 'helpdesk:list' %}" id="pagination_select" method="get">
+						{% csrf_token %}
+						<select class="" style="width:100px; float:right;margin-top:-25px;" name="records_per_page">
+							<option {% if records_per_page == '25' %} selected {% endif %}>25</option>
+							<option {% if records_per_page == '50' %} selected {% endif %}>50</option>
+							<option {% if records_per_page == '100' %} selected {% endif %}>100</option>
+							<option {% if records_per_page == '200' %} selected {% endif %}>200</option>
+						</select>	
+					</form>
+                </div>
+                <div class="panel-body panel-custom-body">
+                    <div class="table-responsive">
+
+                        <form method='post' action="{% url 'helpdesk:mass_update' %}" id="ticket_mass_update">
+                        	
+                        	<input type="hidden" value="" name="action" id="action">
+                        	{% csrf_token %}
+                        	
+                            <table class="table table-bordered table-hover" style="margin:0px;font-size:85%">
+                                <thead class="table-heading-orange">
+                                    <th width="20px" style="font-weight:bold;">
+                                        <i class="fa fa-check" id="select_inverse" param="0" style="cursor:pointer;"></i>
+                                    </th>
+                                    <th>Ticket ID</th>
+                                    <th>{% trans "Priority" %}</th>
+                                    <th>{% trans "Title" %}</th>
+                                    <th>{% trans "Queue" %}</th>
+                                    <th>{% trans "Status" %}</th>
+                                    <th>{% trans "Created" %}</th>
+                                    <th>{% trans "Due Date" %}</th>
+                                    <th>{% trans "Owner" %}</th>
+                                </thead>
+                                <tbody>
+                                    {% for ticket in tickets %}
+                                    <tr>
+                                        <td><input type='checkbox' name='ticket_id' value='{{ ticket.id }}' class='ticket_multi_select' /></td>
+                                        <td><a href='{{ ticket.get_absolute_url }}'>{{ ticket.ticket }}</a></th>
+                                        <td>
+                                            <span class="color-{{ ticket.get_priority_css_class }}">
+                                                {% if ticket.priority == 1 %} Critical
+                                                {% elif ticket.priority == 2 %} High
+                                                {% elif ticket.priority == 3 %} Normal
+                                                {% elif ticket.priority == 4 %} Low
+                                                {% elif ticket.priority == 5 %} Very Low
+                                                {% endif %}
+                                            </span>
+                                        </td>
+                                        <td><a href='{{ ticket.get_absolute_url }}'>{{ ticket.title }}</a></th>
+                                        <td>{{ ticket.queue }}</td>
+                                        <td>{{ ticket.get_status }}</td>
+                                        <td data-order='{{ ticket.created|date:"U" }}'><span title='{{ ticket.created|date:"r" }}'>{{ ticket.created|naturaltime }}</span></td>
+                                        <td data-order='{{ ticket.due_date|date:"U" }}'><span title='{{ ticket.due_date|date:"r" }}'>{{ ticket.due_date|naturaltime }}</span></td>
+                                        <td>{{ ticket.get_assigned_to }}</td>                                    
+                                    </tr>
+                                    {% empty %}
+                                        <tr><td colspan='9'>{% trans "No records found." %}</td></tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>  
+                        </form>
+
+						{% if tickets.paginator.count > 0 %}
+						<div class="col-md-12 pagination text-center">
+							{% paginate tickets request.META.QUERY_STRING %}
+						</div>
+						{% endif %}
+
+
+                    </div>
+                </div>                
+            </div>            
+        </div>
+        <div class="col-lg-3">
+            <div class="row" style="margin-right: 0px;">
+                <div class="panel panel-custom panel-custom-orange" style="margin-bottom:10px;">
+                    <div class="panel-heading panel-heading-orange">
+                        <strong>{% trans "With Selected Tickets" %}</strong>
+                        <span class="pull-right" style="cursor:pointer" onclick="minimize('selected-tickets', $(this))" param="1">
+                            <i class="fa fa-caret-up"></i>
+                        </span>
+                    </div>
+                    <div id="selected-tickets" class="panel-body panel-custom-body panel-body-scrollbar-1em" style="height:250px; overflow:auto">
+                        <ul class="filter-lists">
+                            <li><a href="#take">{% trans "Take Over (Assign to me)" %}</a></li>
+                            <li><a href="#delete">{% trans "Delete" %}</a></li>
+                            <hr>
+                            <li><a href="#close">{% trans "Close (Don't Send E-Mail)" %}</a></li>
+                            <li><a href="#close_public">{% trans "Close (Send E-Mail)" %}</a></li>
+                            <hr>
+                            <li><a href="#unassign">{% trans "Unassign Tickets" %}</a></li>
+                            
+                            {% for u in user_choices %}
+                                <li><a href="#assign_{{ u.id }}">{{ u.first_name|title }} {{u.last_name|title}} (Assign)</a></li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="row" style="margin-right: 0px;">
+                <div class="panel panel-custom panel-custom-orange" style="margin-bottom:10px;">
+                    <div class="panel-heading panel-heading-orange">
+                        <strong>{% trans "Show Tickets" %}</strong>
+                        <span class="pull-right" style="cursor:pointer" onclick="minimize('show-tickets', $(this))" param="1">
+                            <i class="fa fa-caret-up"></i>
+                        </span>
+                    </div>
+                    <div id="show-tickets" class="panel-body panel-custom-body panel-body-scrollbar-1em" style="height:250px; overflow:auto">
+                        <ul class="filter-lists">
+                            <li><a href="?show_tickets=taken_over_by_me">{% trans "Taken Over By Me" %}</a></li>
+                            <li><a href="?show_tickets=open_tickets">{% trans "Open Tickets" %}</a></li>
+							<li><a href="?show_tickets=reopened_tickets">{% trans "Re-Opened Tickets" %}</a></li>
+							<li><a href="?show_tickets=resolved_tickets">{% trans "Resolved Tickets" %}</a></li>
+                            <li><a href="?show_tickets=closed_tickets">{% trans "Closed tickets" %}</a></li>
+							<li><a href="?show_tickets=onhold_tickets">{% trans "On-Hold tickets" %}</a></li>
+                            <li><a href="?show_tickets=duplicate_tickets">{% trans "Duplicate Tickets" %}</a></li>
+                            <li><a href="?show_tickets=unassigned_tickets">{% trans "Unassigned Tickets" %}</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+
+
+{% endblock %}

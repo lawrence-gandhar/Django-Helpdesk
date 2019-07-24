@@ -1,0 +1,80 @@
+{% extends "helpdesk/base.html" %}
+{% load i18n humanize %}
+{% load static from staticfiles %}
+{% block helpdesk_title %}{% trans "Tickets" %}{% endblock %}
+{% block helpdesk_head %}
+{% load pagination %}
+
+{% endblock %}
+{% block h1_title %}Tickets
+<a href="{% url 'helpdesk:submit' %}" class="pull-right" style="color:#FFFFFF; margin-right:10px;">
+    <i class="fa fa-plus-circle fa-fw"></i> <span class="nav-text">{% trans "Add New Ticket" %}</span></a>
+{% endblock %}
+
+{% block helpdesk_body %}
+<div class="row">
+    <div class="col-lg-12">
+        <div class="panel panel-custom panel-custom-orange">
+            <div class="panel-heading panel-heading-orange">
+                <strong>{% trans "Users" %}</strong>                    
+            </div>
+
+            <div class="panel-body panel-custom-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover" style="margin:0px;font-size:85%">
+                        <thead class="table-heading-orange">
+                            <th width="20px" style="font-weight:bold; text-align:center">
+                                <i class="fa fa-check" id="select_inverse" param="0" style="cursor:pointer;"></i>
+                            </th>
+                            <th style=" text-align:center">Username</th>
+                            <th style=" text-align:center">First Name</th>
+                            <th style=" text-align:center">Last Name</th>
+                            <th style=" text-align:center">Email</th>
+                            <th style=" text-align:center">Staff</th>
+                            <th style=" text-align:center">Active</th>
+                        </thead>
+                        <tfoot class="table-heading-orange">
+                            <th width="20px" style="font-weight:bold;">
+                                <i class="fa fa-check" id="select_inverse" param="0" style="cursor:pointer;"></i>
+                            </th>
+                            <th style=" text-align:center">Username</th>
+                            <th style=" text-align:center">First Name</th>
+                            <th style=" text-align:center">Last Name</th>
+                            <th style=" text-align:center">Email</th>
+                            <td style=" text-align:center; width:80px;">Staff</th>
+                            <th width="80px" style=" text-align:center">Active</th>
+                        </tfoot>                            
+                        <tbody>
+                            {% for row in users_list %}
+                                <tr>
+                                    <td>{{row.id}}</td>
+                                    <td>{{row.username}}</td>
+                                    <td>{{row.first_name}}</td>
+                                    <td>{{row.last_name}}</td>
+                                    <td>{{row.email}}</td>
+                                    <td style="text-align:center">
+                                        {% if row.is_staff%}
+                                        Yes
+                                        {% else %}
+                                        No
+                                        {% endif %}
+                                    </td>
+                                    <td style="text-align:center">
+                                        {% if row.is_active%}
+                                        Yes
+                                        {% else %}
+                                        No
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+

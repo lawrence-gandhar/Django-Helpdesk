@@ -1,0 +1,127 @@
+{% extends "helpdesk/base.html" %}{% load i18n bootstrap %}
+
+{% block helpdesk_title %}{% trans "Create Ticket" %}{% endblock %}
+
+{% block helpdesk_head %}
+<script type='text/javascript' language='javascript'>
+// this function listens for changes on any file input, and
+// emits the appropriate event to update the input's text.
+// Needed to have properly styled file input buttons! (this really shouldn't be this hard...)
+$(document).on('change', ':file', function() {
+    var input = $(this),
+        inputWidgetNum = $(this).attr('id').split("file")[1],
+        numFiles = input.get(0).files ? input.get(0).files.length : 1,
+        label = input.val().replace(/\\/g, '/').replace(/.*\//, '');
+    input.trigger('fileselect', [numFiles, label, inputWidgetNum]);
+});
+</script>
+{% endblock %}
+
+{% load i18n humanize %}
+
+{% block helpdesk_body %}
+
+
+            <div class="row">
+                <div class="col-xs-9">
+                    <div class="panel panel-default" style="border-color: #f7770a">
+        				<div class="panel-heading" style="padding: 5px 15px; background-color: #f7770a; border-color: #f7770a; color:#000000;">
+                            <h5 style="margin-bottom:0px;margin-top: 0px">{% trans "Submit a Ticket" %}</h4>
+							<small>
+								{% trans "All fields are required." %} {% trans "Please provide as descriptive a title and description as possible." %}
+							</small>
+                        </div>
+                        <!-- /.panel-heading -->
+                        <div class="panel-body">
+                            <p>{% trans "Unless otherwise stated, all fields are required." %} {% trans "Please provide as descriptive a title and description as possible." %}</p>
+                            <form method='post' id="ticket_form" action='./' enctype='multipart/form-data'>
+                                <fieldset class='col-xs-12'>
+                                    {% for field in form %}
+                                        {% if field.is_hidden %}
+                                            {{ field }}
+                                        {% else %}
+									{% if field.name == 'body' or field.name == 'title'  %}
+										 <div class="col-md-12">
+				                            <div class="form-group {% if field.errors %}has-error{% endif %}">
+				                                <label class="control-label" for='id_{{ field.name }}'>{{ field.label }}</label>{% if not field.field.required %} <span class='form_optional'>{% trans "(Optional)" %}</span>{% endif %}</dt>
+				                                <div class="form-group" {% if field.help_text %} style="margin-bottom:0px;" {% endif %}>{{ field }}</div>
+				                                {% if field.errors %}<div class="help-block">{{ field.errors }}</div>{% endif %}
+				                                {% if field.help_text %}<span class='fhelp-block' style="font-size:80%;">{{ field.help_text }}</span>{% endif %}
+				                            </div>
+				                        </div>
+		                        	{% else %}
+									<div class="col-md-4">
+		                                <div class="form-group {% if field.errors %}has-error{% endif %}">
+		                                    <label class="control-label" for='id_{{ field.name }}'>{{ field.label }}</label>{% if not field.field.required %} <span class='form_optional'>{% trans "(Optional)" %}</span>{% endif %}</dt>
+		                                    <div class="form-group" {% if field.help_text %} style="margin-bottom:0px;" {% endif %}>{{ field }}</div>
+		                                    {% if field.errors %}<div class="help-block">{{ field.errors }}</div>{% endif %}
+		                                    {% if field.help_text %}<span class='fhelp-block'  style="font-size:80%;">{{ field.help_text }}</span>{% endif %}
+		                                </div>
+		                            </div>
+                            		{% endif %}
+									{% endif %}
+                                    {% endfor %}
+
+                                    <div class="row">
+								        <div class='col-md-12 text-center'>
+								            <input type='submit' class="btn btn-success" value='{% trans "Submit Ticket" %}' />
+								        </div>
+                                    </div>
+                                </fieldset>
+                            {% csrf_token %}</form>
+                            <!-- /.form -->
+                        </div>
+                        <!-- /.panel-body -->
+                    </div>
+                    <!-- /.panel -->
+                </div>
+
+				<div class="col-xs-3">
+					<div class="panel panel-default" style="border-color: #f7770a">
+        				<div class="panel-heading" style="padding: 5px 15px; background-color: #f7770a; border-color: #f7770a; color:#000000;">
+		                    <h5 style="margin-bottom:0px;margin-top: 0px">{% trans "15 Recent Tickets" %}</h4>
+		                </div>
+		                <!-- /.panel-heading -->
+		                <div class="panel-body" style="padding:0px;">
+						<table class="table table-responsive">	
+						<thead class="" style="background-color:#000000; color:#FFFFFF;font-size:75%">
+                            <tr>
+                                <th width="150px" style="text-align:center">Ticket ID</th>
+                                <th width="100px" style="text-align:center">{% trans "Status" %}</th>
+                                <th width="150px" style="text-align:center">{% trans "Last Update" %}</th>
+                            </tr>
+                        </thead>					
+						{% for ticket in recent_tickets %}
+							<tr style="font-size:85%">
+								<td>
+									<small>
+									<a href='{{ ticket.get_absolute_url }}'>{{ticket.ticket}}</a>
+									</small>								
+								</td>
+								<td width="70px" class="text-center">
+								{{ ticket.get_status }}	
+								</td>
+								<td>
+									<span title='{{ ticket.modified|date:"r" }}'>
+									{{ ticket.modified|naturaltime }}
+									</span>
+								</td>
+							</tr>
+						{% endfor %}
+						</table>
+						</div>
+					</div>
+				</div>
+
+
+            </div>
+
+			
+
+            <script>
+                $( function() {
+			$( "#id_due_date" ).datepicker({dateFormat: 'yy-mm-dd'});
+                } );
+            </script>
+
+{% endblock %}
