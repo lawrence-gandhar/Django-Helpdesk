@@ -23,13 +23,7 @@
         });
     });
     </script>
-{% block h1_title %}Users
-
-{% if user.is_superuser %}
-<a href="{% url 'helpdesk:submit' %}" class="pull-right" style="color:#FFFFFF; margin-right:10px;">
-    <i class="fa fa-plus-circle fa-fw"></i> <span class="nav-text">{% trans "Add New User" %}</span></a>
-{% endif %}
-{% endblock %}
+{% block h1_title %}Users{% endblock %}
 
 {% block helpdesk_body %}
 <div class="row">
