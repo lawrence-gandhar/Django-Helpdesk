@@ -37,49 +37,50 @@
                 <div class="table-responsive">
                     <table class="table table-bordered table-hover" style="margin:0px;font-size:85%">
                         <thead class="table-heading-orange">
-                            <th width="20px" style="font-weight:bold; text-align:center">
-                                <i class="fa fa-check" id="select_inverse" param="0" style="cursor:pointer;"></i>
-                            </th>
-                            <th style=" text-align:center">Username</th>
-                            <th style=" text-align:center">First Name</th>
-                            <th style=" text-align:center">Last Name</th>
+                            <th style=" text-align:center">Staff Name</th>
                             <th style=" text-align:center">Email</th>
-                            <th style=" text-align:center">Staff</th>
                             <th style=" text-align:center">Active</th>
+                            <th style=" text-align:center">Staff Type</th>
+                            <th style=" text-align:center">Assigned Tickets</th>
+                            <th style=" text-align:center">Open Tickets</th>
+                            <th style=" text-align:center">Re-Opened Tickets</th>
+                            <th style=" text-align:center">Resolved Tickets</th>
+                            <th style=" text-align:center">Closed Tickets</th>
+                            <th style=" text-align:center">Duplicate Tickets</th>
+                            <th style=" text-align:center">On-Hold Tickets</th>
                         </thead>
-                        <tfoot class="table-heading-orange">
-                            <th width="20px" style="font-weight:bold;">
-                                <i class="fa fa-check" id="select_inverse" param="0" style="cursor:pointer;"></i>
-                            </th>
-                            <th style=" text-align:center">Username</th>
-                            <th style=" text-align:center">First Name</th>
-                            <th style=" text-align:center">Last Name</th>
+                        <tfoot class="table-heading-orange">                            
+                            <th style=" text-align:center">Staff Name</th>
                             <th style=" text-align:center">Email</th>
-                            <td style=" text-align:center; width:80px;">Staff</th>
-                            <th width="80px" style=" text-align:center">Active</th>
+                            <th style=" text-align:center">Active</th>
+                            <th style=" text-align:center">Staff Type</th>
+                            <th style=" text-align:center">Assigned Tickets</th>
+                            <th style=" text-align:center">Open Tickets</th>
+                            <th style=" text-align:center">Re-Opened Tickets</th>
+                            <th style=" text-align:center">Resolved Tickets</th>
+                            <th style=" text-align:center">Closed Tickets</th>
+                            <th style=" text-align:center">Duplicate Tickets</th>
+                            <th style=" text-align:center">On-Hold Tickets</th>
                         </tfoot>                            
                         <tbody>
-                            {% for row in users_list %}
+                            {% for user in tickets %}
+                            
                                 <tr>
-                                    <td>{{row.id}}</td>
-                                    <td>{{row.username}}</td>
-                                    <td>{{row.first_name}}</td>
-                                    <td>{{row.last_name}}</td>
-                                    <td>{{row.email}}</td>
-                                    <td style="text-align:center">
-                                        {% if row.is_staff%}
-                                        Yes
-                                        {% else %}
-                                        No
-                                        {% endif %}
-                                    </td>
-                                    <td style="text-align:center">
-                                        {% if row.is_active%}
-                                        Yes
-                                        {% else %}
-                                        No
-                                        {% endif %}
-                                    </td>
+                                    <td>{{ user.first_name|upper|safe }} {{user.last_name|upper|safe}}</td>
+                                    <td>{{ user.email|safe }}</td>
+                                    <td style=" text-align:center">{% if user.is_active %} YES {% else %} NO {% endif %}</td>
+                                    <td style=" text-align:center">{% if user.is_superuser %} ADMIN {% else %} STAFF {% endif %}</td>
+                                    <td style=" text-align:center">{{ user.assigned_tickets|safe }}</td>
+                                    <td style=" text-align:center">{{ user.open_tickets|safe }}</td>
+                                    <td style=" text-align:center">{{ user.reopen_tickets|safe }}</td>
+                                    <td style=" text-align:center">{{ user.resolved_tickets|safe }}</td>
+                                    <td style=" text-align:center">{{ user.closed_tickets|safe }}</td>
+                                    <td style=" text-align:center">{{ user.duplicate_tickets|safe }}</td>
+                                    <td style=" text-align:center">{{ user.onhold_tickets|safe }}</td>
+                                </tr>
+                            {% empty %}
+                                <tr>
+                                    <td colspan="10">No Records</td>
                                 </tr>
                             {% endfor %}
                         </tbody>

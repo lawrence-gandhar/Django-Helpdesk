@@ -202,6 +202,29 @@ def pie_chart_data(request, s_year = None, s_month = None):
 
 
 
+#===============================================================================================
+# Ticket details assigned to Users
+#
+#===============================================================================================
+
+def tickets_assigned_to_users():
+	from django.db import connection
+	
+	with connection.cursor() as cursor:
+		cursor.execute(
+			'''select AU.id, AU.first_name, AU.last_name, AU.is_active, AU.email, AU.is_superuser,
+				(select count(id) from helpdesk_ticket where assigned_to_id = AU.id) as assigned_tickets,
+				(select count(id) from helpdesk_ticket where status = 1 and assigned_to_id = AU.id) as open_tickets,
+				(select count(id) from helpdesk_ticket where status = 2 and assigned_to_id = AU.id) as reopen_tickets,
+				(select count(id) from helpdesk_ticket where status = 3 and assigned_to_id = AU.id) as resolved_tickets,
+				(select count(id) from helpdesk_ticket where status = 4 and assigned_to_id = AU.id) as closed_tickets,
+				(select count(id) from helpdesk_ticket where status = 5 and assigned_to_id = AU.id) as duplicate_tickets,
+				(select count(id) from helpdesk_ticket where status = 6 and assigned_to_id = AU.id) as onhold_tickets
+				from auth_user AU  
+				where AU.id in (select id from auth_user) order by id asc''')
+		columns = [col[0] for col in cursor.description]
+		return [dict(zip(columns, row)) for row in cursor.fetchall()]
+
             
 
 	

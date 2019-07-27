@@ -87,12 +87,16 @@ def _is_my_ticket(user, ticket):
 
 
 #=========================================================================================
-#   USERS MANAGEMENT
+#   USERS SECTION
 #=========================================================================================
 @staff_member_required
 def users_list(request):
-    users = User.objects.all() 
-    return render(request,"helpdesk/users_list.html",{"users_list":users.values()})
+    tickets = helper.tickets_assigned_to_users()
+    return render(request,"helpdesk/users_list.html",{"tickets" : tickets})
+
+#=========================================================================================
+#   USERS SECTION END
+#=========================================================================================
 
 
 @staff_member_required
