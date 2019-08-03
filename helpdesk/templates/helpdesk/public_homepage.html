@@ -3,6 +3,15 @@
 
 {% block helpdesk_body %}
 
+
+<style>
+
+.minimize-chat{bottom: -269px;}
+.maximize-chat{bottom: -1px;}
+
+</style>
+
+
 {% if kb_categories %}
     <h2>{% trans "Knowledgebase Articles" %}</h2>
 
@@ -107,14 +116,12 @@
 </div>
 {% endif %}
 
-<div style="border:1px solid #f7770a;display: block; position: fixed; bottom: -1px; height: 300px; width:250px; background-color:#FFFFFF; right:20px; border-radius:5px 5px 0px 0px">
-<div class="header" style="color:#FFFFFF; background-color:#f7770a; padding:5px 10px; display:block; ">
-    Ask Me, support online
-    <i tutle="Minimize" class="fa fa-caret-down pull-right" style="margin-top:3px; cursor:pointer;" id="chatbox-icon"></i>
+<div id="chatbox-main" class="minimize-chat" style="border:1px solid #f7770a;display: block; position: fixed; height: 300px; width:250px; background-color:#FFFFFF; right:20px; border-radius:5px 5px 0px 0px">
+    <div class="header" style="color:#FFFFFF; background-color:#f7770a; padding:5px 10px; display:block; ">
+        Ask Me, support online
+        <i onclick = 'chat_minimize("chatbox-main",$(this))' param="0" class="fa fa-caret-up pull-right" style="margin-top:3px; cursor:pointer;" id="chatbox-icon"></i>
+    </div>
 </div>
-</div>
-
-
 
 {% endblock %}
 

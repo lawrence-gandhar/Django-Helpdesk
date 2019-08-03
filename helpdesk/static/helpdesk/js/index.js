@@ -41,3 +41,19 @@ function minimize(value, elem){
     }
     $(elem).attr("param",1-$(elem).attr("param"));
 }
+
+
+
+function chat_minimize(value, elem){
+	$(elem).attr("param",1-$(elem).attr("param"));
+	
+    if($(elem).attr("param") == '1'){
+    	$("#"+value).removeClass().addClass('maximize-chat');
+    	$(elem).removeClass().addClass("fa fa-caret-down pull-right")
+    }
+    else{
+    	$("#"+value).removeClass().addClass('minimize-chat');
+    	$(elem).removeClass().addClass("fa fa-caret-up pull-right")
+    }
+    
+}
