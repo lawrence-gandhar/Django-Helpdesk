@@ -187,6 +187,6 @@ def chatme(request):
     #trainer.train('chatterbot.corpus.english')
 
     # Get a response to the input text 'I would like to book a flight.'
-    response = chatbot.get_response({'text':'"Bend over"'})
+    response = chatbot.get_response({'text':'abcd'})
 
     return HttpResponse(response)
