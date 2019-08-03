@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'markdown_deux',
     'django.contrib.humanize',
     'django.contrib.sites',
+    'chatterbot.ext.django_chatterbot'
 ]
 
 MIDDLEWARE = [
@@ -89,6 +90,19 @@ DATABASES = {
         'NAME': 'ticket_system',
     },
 }
+
+#
+# Chatterbot
+
+CHATTERBOT = {
+    'name': 'Tech Support Bot',
+    'logic_adapters': [
+        'chatterbot.logic.MathematicalEvaluation',
+        'chatterbot.logic.TimeLogicAdapter',
+        'chatterbot.logic.BestMatch'
+    ]
+}
+
 
 # Password validation
 # https://docs.djangoproject.com/en/2.2/ref/settings/#auth-password-validators

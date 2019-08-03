@@ -240,3 +240,7 @@ urlpatterns += [
 urlpatterns += [
     url(r'^users/$',staff.users_list, name="users"),
 ]
+
+urlpatterns += [
+    url(r'^chatme/$', public.chatme, name="chatme")
+]

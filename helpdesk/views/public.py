@@ -43,7 +43,7 @@ def homepage(request):
         except UserSettings.DoesNotExist:
             return HttpResponseRedirect(reverse('helpdesk:dashboard'))
         """
-
+    
     if request.method == 'POST':
         form = PublicTicketForm(request.POST, request.FILES)
         form.fields['queue'].choices = [('', '--------')] + [
@@ -102,6 +102,7 @@ def homepage(request):
         'helpdesk_settings': helpdesk_settings,
         'kb_categories': knowledgebase_categories
     })
+
 
 
 @protect_view
@@ -169,3 +170,25 @@ def change_language(request):
         return_to = request.GET['return_to']
 
     return render(request, 'helpdesk/public_change_language.html', {'next': return_to})
+
+
+def chatme(request):
+    from django.http import JsonResponse
+    from chatterbot import ChatBot
+    from chatterbot.ext.django_chatterbot import settings
+    from chatterbot.trainers import ListTrainer
+
+    chatterbot = ChatBot(**settings.CHATTERBOT)
+
+    trainer = ListTrainer(chatterbot)
+
+    trainer.train([
+        "Hi, can I help you?",
+        "Sure, I'd like to book a flight to Iceland.",
+        "Your flight has been booked."
+    ])
+
+    # Get a response to the input text 'I would like to book a flight.'
+    response = chatterbot.get_response('I would like to book a flight.')
+
+    return HttpResponse(response)
