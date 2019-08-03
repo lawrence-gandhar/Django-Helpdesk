@@ -172,23 +172,21 @@ def change_language(request):
     return render(request, 'helpdesk/public_change_language.html', {'next': return_to})
 
 
+
+
 def chatme(request):
     from django.http import JsonResponse
     from chatterbot import ChatBot
     from chatterbot.ext.django_chatterbot import settings
-    from chatterbot.trainers import ListTrainer
+    from chatterbot.trainers import ChatterBotCorpusTrainer
 
-    chatterbot = ChatBot(**settings.CHATTERBOT)
+    chatbot = ChatBot(**settings.CHATTERBOT)
 
-    trainer = ListTrainer(chatterbot)
+    #trainer = ChatterBotCorpusTrainer(chatbot)
 
-    trainer.train([
-        "Hi, can I help you?",
-        "Sure, I'd like to book a flight to Iceland.",
-        "Your flight has been booked."
-    ])
+    #trainer.train('chatterbot.corpus.english')
 
     # Get a response to the input text 'I would like to book a flight.'
-    response = chatterbot.get_response('I would like to book a flight.')
+    response = chatbot.get_response({'text':'"Bend over"'})
 
     return HttpResponse(response)
